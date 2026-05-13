@@ -24,10 +24,10 @@ export class UsersService {
     return savedUser;
   }
 
-  async findAll(): Promise<User[]> {
-    this.logger.log('Fetching all users');
-    return await this.usersRepository.find();
-  }
+  async findAll({ skip, take }: { skip: number; take: number }): Promise<User[]> {
+    this.logger.log(`Fetching users - page skip: ${skip}, take: ${take}`);
+    return await this.usersRepository.find({ skip, take });
+}
 
   async findOne(id: number): Promise<User> {
     this.logger.log(`Fetching user with id=${id}`);
