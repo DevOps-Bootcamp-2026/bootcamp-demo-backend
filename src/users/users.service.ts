@@ -10,15 +10,17 @@ export class UsersService {
   private readonly logger = new Logger(UsersService.name);
 
   constructor(
-    @InjectRepository(User)
-    private usersRepository: Repository<User>,
+    @InjectRepository(User, 'write')
+    private writeUsersRepository: Repository<User>,
+    @InjectRepository(User, 'read')
+    private readUsersRepository: Repository<User>,
   ) {}
 
   async create(createUserDto: CreateUserDto): Promise<User> {
     this.logger.log(`Creating user with email: ${createUserDto.email}`);
 
-    const user = this.usersRepository.create(createUserDto);
-    const savedUser = await this.usersRepository.save(user);
+    const user = this.writeUsersRepository.create(createUserDto);
+    const savedUser = await this.writeUsersRepository.save(user);
 
     this.logger.log(`User created successfully (id=${savedUser.id})`);
     return savedUser;
@@ -26,22 +28,22 @@ export class UsersService {
 
   async findAll({ skip, take }: { skip: number; take: number }): Promise<User[]> {
     this.logger.log(`Fetching users - page skip: ${skip}, take: ${take}`);
-    return await this.usersRepository.find({ skip, take });
-}
+    return await this.readUsersRepository.find({ skip, take });
+  }
 
   async findOne(id: number): Promise<User> {
     this.logger.log(`Fetching user with id=${id}`);
-    return await this.usersRepository.findOne({ where: { id } });
+    return await this.readUsersRepository.findOne({ where: { id } });
   }
 
   async update(id: number, updateUserDto: UpdateUserDto): Promise<User> {
     this.logger.log(`Updating user id=${id}`);
-    await this.usersRepository.update(id, updateUserDto);
+    await this.writeUsersRepository.update(id, updateUserDto);
     return this.findOne(id);
   }
 
   async remove(id: number): Promise<void> {
     this.logger.warn(`Deleting user id=${id}`);
-    await this.usersRepository.delete(id);
+    await this.writeUsersRepository.delete(id);
   }
 }

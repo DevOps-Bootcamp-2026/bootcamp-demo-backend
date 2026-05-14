@@ -5,7 +5,10 @@ import { UsersController } from './users.controller';
 import { User } from './entities/user.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User])],
+  imports: [
+    TypeOrmModule.forFeature([User], 'write'),
+    TypeOrmModule.forFeature([User], 'read'),
+  ],
   controllers: [UsersController],
   providers: [UsersService],
 })
